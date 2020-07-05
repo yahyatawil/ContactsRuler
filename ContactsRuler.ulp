@@ -1,0 +1,273 @@
+//Author:yahya.tawil@gmail.com
+
+#usage 	   "<html><p>This ULP makes distance measuring  between contacts for the footprint easier<br />"
+		   "You can use is in <b>Library and board</b> editors </p>"
+		   "<p>Usage with Library editor:</p>"
+		   "<ul><li>1- Using Group tool, select any 2 of the following: pad, smd, hole and line.</li>"
+		   "<li>2- Run ContactsRuller.ulp</li>"			   
+		   "<li>3- You will have difference in X and Y in 3 units: mm, mil and inch.</li>"
+		   "<li><strong>Note: Don't select more than 2 objects in the group.</li></ul>"	
+		   "<p>Usage with Board editor:</p>"
+		   "<ul><li>1- Using Group tool select the part you want to measure the distance between its pads.</li>"			   
+		   "<li>2-you will have a dialoug whith check boxe beside each contact name.</li>"
+		   "<li>3-select any 2 contacts.</li>"	
+		   "<li>4-Press OK, you will have a dialoug with difference in X and Y in 3 units: mm, mil and inch. </li>"
+		   "<li><strong>Note: Don't select more than 1 part in the group, and don't check more than 2 contacts in the dialoug.</li></ul>"		   
+		   "<p><strong>Usage:</strong> RUN ContactsRuler.ulp<br />"
+		   "<strong>Author:<a href=\"mailto:yahya.tawil@gmail.com\">yahya.tawil@gmail.com</a></strong></p>"   
+		   "</html>"
+
+
+	/* LOG
+				Version		Date			Author			Comment
+				---------+----------------+--------------+---------------------------------------------------------------
+				V1.0		5 July 2020	    Yahya Tawil		First Create. Tested on Version 9.6.2 for Windows (64 bit) 
+	*/
+    
+int targets_num = 0;
+int target_x[]= {0,0};
+int target_y[] ={0,0};
+
+int checked[]={0,0,0,0,0,0,0,0,0,0
+              ,0,0,0,0,0,0,0,0,0,0
+              ,0,0,0,0,0,0,0,0,0,0
+              ,0,0,0,0,0,0,0,0,0,0
+              ,0,0,0,0,0,0,0,0,0,0
+              ,0,0,0,0,0,0,0,0,0,0
+              ,0,0,0,0,0,0,0,0,0,0
+              ,0,0,0,0,0,0,0,0,0,0
+              ,0,0,0,0,0,0,0,0,0,0
+              ,0,0,0,0,0,0,0,0,0,0
+              };
+
+int brd_target_x[]={0,0,0,0,0,0,0,0,0,0
+                   ,0,0,0,0,0,0,0,0,0,0
+                   ,0,0,0,0,0,0,0,0,0,0
+                   ,0,0,0,0,0,0,0,0,0,0
+                   ,0,0,0,0,0,0,0,0,0,0
+                   ,0,0,0,0,0,0,0,0,0,0
+                   ,0,0,0,0,0,0,0,0,0,0
+                   ,0,0,0,0,0,0,0,0,0,0
+                   ,0,0,0,0,0,0,0,0,0,0
+                   ,0,0,0,0,0,0,0,0,0,0
+                   };
+
+int brd_target_y[]={0,0,0,0,0,0,0,0,0,0
+                   ,0,0,0,0,0,0,0,0,0,0
+                   ,0,0,0,0,0,0,0,0,0,0
+                   ,0,0,0,0,0,0,0,0,0,0
+                   ,0,0,0,0,0,0,0,0,0,0
+                   ,0,0,0,0,0,0,0,0,0,0
+                   ,0,0,0,0,0,0,0,0,0,0
+                   ,0,0,0,0,0,0,0,0,0,0
+                   ,0,0,0,0,0,0,0,0,0,0
+                   ,0,0,0,0,0,0,0,0,0,0
+                    };
+
+void main(void) {
+	
+    if(library)
+    {
+	library(L)
+		{
+            targets_num = 0;
+            L.footprints(F)
+			{
+                F.contacts(C) 
+                {
+                    if(targets_num>2)
+                    {
+                        dlgMessageBox(": Select 2 elements only","+OK");
+                        exit(-1);	
+                    }
+                    if (C.pad)
+                    {
+                        if (ingroup(C.pad))
+                        {
+                            target_x[targets_num]=C.pad.x;
+                            target_y[targets_num]=C.pad.y;
+                            
+                            targets_num++;
+                            //string str;
+                            //sprintf(str,"\tPad: %s, (%f %f)\n",C.name, u2mm(C.pad.x), u2mm(C.pad.y));
+                            //dlgMessageBox(str,"+OK");
+                        }
+                    }
+                    else if (C.smd)
+                    {
+                        if (ingroup(C.smd))
+                        {
+                            target_x[targets_num]=C.smd.x;
+                            target_y[targets_num]=C.smd.y;
+                            
+                            targets_num++;
+                            //string str;
+                            //sprintf(str,"\tSmd: %s, (%f %f)\n",C.name, u2mm(C.smd.x), u2mm(C.smd.y));
+                            //dlgMessageBox(str,"+OK");
+                        }
+                    }
+                }
+                F.holes(H)
+                {
+                    if(targets_num>2)
+                    {
+                        dlgMessageBox(": Select 2 elements only","+OK");
+                        exit(-1);	
+                    }
+                    if (ingroup(H))
+                    {
+                            target_x[targets_num]=H.x;
+                            target_y[targets_num]=H.y;
+                            
+                            targets_num++;
+                            
+                            //string str;
+                            //sprintf(str,"\tHole: (%f %f)\n",u2mm(H.x), u2mm(H.y));
+                            //dlgMessageBox(str,"+OK");
+                    }
+                }
+                F.wires(W)
+                {
+                    if(targets_num>2)
+                    {
+                        dlgMessageBox(": Select 2 elements only","+OK");
+                        exit(-1);	
+                    }
+                    if (ingroup(W))
+                    {
+                            target_x[targets_num]=W.x1;
+                            target_y[targets_num]=W.y1;
+                            
+                            targets_num++;
+                            
+                            //string str;
+                            //sprintf(str,"\tHole: (%f %f)\n",u2mm(W.x1), u2mm(W.y1));
+                            //dlgMessageBox(str,"+OK");
+                    }
+                }
+			}
+            
+            if(targets_num<2)
+            {
+                dlgMessageBox(": Select 2 objects","+OK");
+                exit(-1);	
+            }
+                    
+            string str;
+ 
+            string str1;
+            string str2;
+            string str3;
+            
+            real diff_X= u2mm(target_x[1])-u2mm(target_x[0]);
+            real diff_Y = u2mm(target_y[1])-u2mm(target_y[0]);
+            sprintf(str1,";mm -> X1-X2= %f, Y1-Y2= %f\n",diff_X,diff_Y);
+            str += str1;
+            
+            diff_X= u2inch(target_x[1])-u2inch(target_x[0]);
+            diff_Y = u2inch(target_y[1])-u2inch(target_y[0]);
+            sprintf(str2,"inch -> X1-X2= %f, Y1-Y2= %f\n",diff_X,diff_Y);
+            str += str2;
+            
+            diff_X= u2mil(target_x[1])-u2mil(target_x[0]);
+            diff_Y = u2mil(target_y[1])-u2mil(target_y[0]);
+            sprintf(str3,"mil   -> X1-X2= %f, Y1-Y2= %f\n",diff_X,diff_Y);
+            str += str3;
+            
+            dlgMessageBox(str,"+OK");
+            exit(-1);	
+		}
+	}
+	
+	if(board)
+	{
+		board(B)
+        {
+            B.elements(E)
+            {
+                if(ingroup(E))
+                {
+                  //string str;
+                  //sprintf(str,"%s",E.footprint.name);
+                  //dlgMessageBox(str,"+OK");  
+                    
+
+                    
+                    
+                    dlgDialog("Contacts Ruler ULP") 
+                    {
+                        dlgLabel("Select 2 contacts to calculate distance");
+                        dlgGridLayout 
+                        {
+                            int col_num=-1;
+                            E.footprint.contacts(C) 
+                            {
+                            if(targets_num%30 == 0) col_num++; 
+                                dlgCell(targets_num-(30*col_num), col_num) 
+                                {
+                                    dlgCheckBox(C.name, checked[targets_num]);
+                                    brd_target_x[targets_num]=C.x;
+                                    brd_target_y[targets_num++]=C.y;
+                                }
+                            }
+                        }
+                            dlgSpacing(10);
+                            dlgHBoxLayout 
+                            {
+                                dlgStretch(1);
+                                dlgPushButton("+OK") 
+                                {
+                                    int cnt=0;
+                                    for(int i=0;i<100;i++)
+                                    {
+                                        if(checked[i]==1)
+                                        {
+                                            target_x[cnt]=brd_target_x[i];
+                                            target_y[cnt++]=brd_target_y[i];
+                                        }
+                                        if(cnt>2) 
+                                        {
+                                            dlgMessageBox(": Select 2 objects","+OK");
+                                            exit(-1);	
+                                        }
+                                    }
+                                    
+                                    string str;
+ 
+                                    string str1;
+                                    string str2;
+                                    string str3;
+            
+                                    real diff_X= u2mm(target_x[1])-u2mm(target_x[0]);
+                                    real diff_Y = u2mm(target_y[1])-u2mm(target_y[0]);
+                                    sprintf(str1,";mm -> X1-X2= %f, Y1-Y2= %f\n",diff_X,diff_Y);
+                                    str += str1;
+                                    
+                                    diff_X= u2inch(target_x[1])-u2inch(target_x[0]);
+                                    diff_Y = u2inch(target_y[1])-u2inch(target_y[0]);
+                                    sprintf(str2,"inch -> X1-X2= %f, Y1-Y2= %f\n",diff_X,diff_Y);
+                                    str += str2;
+                                    
+                                    diff_X= u2mil(target_x[1])-u2mil(target_x[0]);
+                                    diff_Y = u2mil(target_y[1])-u2mil(target_y[0]);
+                                    sprintf(str3,"mil   -> X1-X2= %f, Y1-Y2= %f\n",diff_X,diff_Y);
+                                    str += str3;
+                                    
+                                    dlgMessageBox(str,"+OK");
+                                    dlgAccept();
+                                }
+                                dlgPushButton("Cancel") dlgReject();
+                            }
+                    };
+                }    
+            }
+        }
+	}
+	
+	if(schematic)
+	{
+		dlgMessageBox(": Open this ULP from the library or board Editor","+OK");
+		exit(-1);		
+	}
+
+}
