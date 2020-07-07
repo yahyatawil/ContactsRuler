@@ -1,6 +1,6 @@
 
 
-![](https://img.shields.io/badge/Version-V.1.0-blue) ![](https://img.shields.io/badge/Tested_On-Eagle.V.9.6.2-green)
+![](https://img.shields.io/badge/Version-V.1.0-blue) ![](https://img.shields.io/badge/Tested_On-Eagle.V.9.6.2-green) ![](https://img.shields.io/badge/Tested_On-Eagle.V.7.1-green)
 
 # ContactsRuler
 This ULP makes measuring distances between footprint contacts easier
