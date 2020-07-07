@@ -22,6 +22,7 @@
 				Version		Date			Author			Comment
 				---------+----------------+--------------+---------------------------------------------------------------
 				V1.0		5 July 2020	    Yahya Tawil		First Create. Tested on Version 9.6.2 for Windows (64 bit) 
+                V1.1        8 July 2020     Yahya Tawil     Replace footprints() loop member with components(), to keep compatible with old versions
 	*/
     
 int targets_num = 0;
@@ -71,7 +72,7 @@ void main(void) {
 	library(L)
 		{
             targets_num = 0;
-            L.footprints(F)
+            L.packages(F) 
 			{
                 F.contacts(C) 
                 {
@@ -188,7 +189,7 @@ void main(void) {
                 if(ingroup(E))
                 {
                   //string str;
-                  //sprintf(str,"%s",E.footprint.name);
+                  //sprintf(str,"%s",E.package.name);
                   //dlgMessageBox(str,"+OK");  
                     
 
@@ -200,7 +201,7 @@ void main(void) {
                         dlgGridLayout 
                         {
                             int col_num=-1;
-                            E.footprint.contacts(C) 
+                            E.package.contacts(C) 
                             {
                             if(targets_num%30 == 0) col_num++; 
                                 dlgCell(targets_num-(30*col_num), col_num) 
